@@ -1,0 +1,81 @@
+!nvidia-smi
+
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.104.05             Driver Version: 535.104.05   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  Tesla T4                       Off | 00000000:00:04.0 Off |                    0 |
+| N/A   46C    P8               9W /  70W |      0MiB / 15360MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|| 
+No running processes found                                                           |
++---------------------------------------------------------------------------------------
+
+
+
+/content
+
+ Pip install method (recommended)
+
+!pip install ultralytics==8.2.103 -q
+
+from IPython import display
+
+display.clear_output()
+
+import ultralytics
+
+ultralytics.checks()
+
+from ultralytics import YOLO
+
+from IPython.display import display, Image
+
+Import dataset:
+
+!mkdir -p {HOME}/datasets
+
+%cd {HOME}/datasets
+
+!pip install roboflow
+
+from roboflow import Roboflow
+
+rf = Roboflow(api_key="h53Ls4KyHtrJzcUe9y2Z")
+
+project = rf.workspace("roboflow-58fyf").project("rock-paper-scissors-sxsw")
+
+version = project.version(14)
+
+dataset = version.download("yolov8")
+
+Train model:
+
+%cd {HOME}
+
+!yolo task=detect mode=train model=yolov8s.pt data={dataset.location}/data.yaml epochs=25  imgsz=800 plots=True
+
+f%cd {HOME}
+
+Image(filename=f'{HOME}/runs/detect/train/confusion_matrix.png', width=600)
+
+
+%cd {HOME}
+
+Image(filename=f'{HOME}/runs/detect/train/val_batch0_pred.jpg', width=600)
+
+
+Validation Model:
+
+%cd {HOME}
+
+!yolo task=detect mode=val model={HOME}/runs/detect/train/weights/best.pt data={dataset.location}/data.yaml
